@@ -10,5 +10,7 @@ var dohome = function () {
     text = document.createTextNode("Student Name Binup Mathai : Z23283452");
     h3.appendChild(text);
     workspace.appendChild(h3);
+    console.log('hi there');
+
     
 }

@@ -1,16 +1,20 @@
 // JavaScript source code
 function dosignin(){
 	
-    clean_buttons();
-    $('#signin').addClass('selected');
+     clean_buttons();
+    document.getElementById("signin").classList.add("selected");
 
-    $('#content').empty();
+    //Clear Content
+    document.getElementById("content").innerHTML = "";
 
-    var btn = $('#signin');
-    $('#signintext').html('Sign-In with Yahoo');
+    var btn = document.createElement("button");
+    btn.innerHTML = "Sign-In with Yahoo!"
     btn.onclick = toggleSignIn;
 
-    $('#content').html(btn);
+    document.getElementById("content").appendChild(btn);
+    console.log('hi there');
+
+
 	
 
 }
@@ -23,6 +27,8 @@ function toggleSignIn() {
     //Set the auth provider to yahoo
     var provider = new firebase.auth.OAuthProvider('yahoo.com');
     //And sign in with a popup
+      console.log('hi there');
+
     firebase.auth().signInWithPopup(provider)
       .then(function (result) { //On Success save the token to session storage and output it to console
         var token = result.credential.accessToken;
@@ -31,12 +37,13 @@ function toggleSignIn() {
         var user = result.user;
         var ws = document.getElementById("content");
         ws.innerHTML = '';
-        var p = document.createElement('p');
-        p.textContent = "User : " + result.user.email;
-        ws.appendChild(p);
-        p = document.createElement('p');
-        p.textContent = "Token : " + token;
-        ws.appendChild(p);
+        //var p = document.createElement('p');
+        //p.textContent = "User : " + result.user.email;
+        //ws.appendChild(p);
+        //p = document.createElement('p');
+        //p.textContent = "Token : " + token;
+        //ws.appendChild(p);
+
 
       })
       .catch(function (error) { //On failure alert user or report error to console

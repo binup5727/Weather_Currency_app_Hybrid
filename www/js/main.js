@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('map').onclick = domap;
     document.getElementById('currency').onclick = docurrency;
     document.getElementById('signin').onclick = dosignin
+    console.log('hi there');
+
 
     //Set listeners for Auth State Changed
     firebase.auth().onAuthStateChanged(function (user) {
@@ -39,12 +41,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     //Make sure the user is logged out and not a saved session
+    console.log('hi there');
+
     firebase.auth().signOut();
+    console.log('hi there');
 
     //Disable the buttons
     buttons_not_signed_in()
 
     dohome();
+    console.log('hi there');
 });
 
 //Helper functions for common tasks
