@@ -21,40 +21,37 @@ function buildcurrency(currency){
     let workspace = document.getElementById("content");
     workspace.innerHTML = "";
 
-    const keys = Object.keys(currency);
-    const ratekey = Object.keys(currency.rates);
+    
+    const content = $('#content');
 
-    workspace.html(`<div class="dropdown">
-    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">currency   
-    <span class="caret"></span></button>
-    <ul class="dropdown-menu">
-      
-    </ul>
-  </div>`)
-
-
-    /*
+    
     const table = $('<table></table>');
-    const tr = '<tr></tr>';
+    table.addClass("table table-striped table-bordered");    const tr = '<tr></tr>';
 
     const frow = $(tr);
-    frow.append('<th>Currency</th>, <th>Rate</th>');
+    frow.append('<th>Currency</th>, <th>Rate Per USD</th>');
     table.append(frow);
 
     const keys = Object.keys(currency);
     const ratekey = Object.keys(currency.rates);
-    console.log(keys,ratekey, ratekey[0]);
-    console.log(tr);
-    const th = '<th>' + ratekeys[0] + '</th>';
-    const td = '<td>' +  currency['rate'][ratekeys[0]] + '</td>';
-    */
 
-    
-    
-    const rows = $(tr)
+    for (let i = 0; i < ratekey.length; i++) {
+        console.log(keys, ratekey, ratekey[0]);
+        const th = `<th>${ratekey[i]}</th>`;
+        const td = `<td>${currency['rates'][ratekey[i]]}</td>`;
 
 
-    table.append('')
+
+
+        const rows = $(tr)
+
+
+
+        table.append(rows);
+        rows.append(th, td);
+
+        content.html(table);
+    }
     //TODO : CURRENCY DATA IS IN JSON OBJECT currency
     //All you need to do is build it into content.
     
