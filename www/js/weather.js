@@ -53,14 +53,16 @@ var doweather = function () { //This function should be used to build your weath
             }
             if (isNaN(val)) { //If value is not a number, call weather API by CITY
                 console.log("CITY Detected");
-                var url = "https://api.openweathermap.org/data/2.5/weather?q=" + val + "&appid=" + WEATHER_API_KEY;
-                xmlRequest(url, onWeatherSuccess, onWeatherFail);
+                var url = 'https://weather-ydn-yql.media.yahoo.com/forecastrss?location=' + val + '&format=json';
+                getWeatherInfo(url, onWeatherSuccess, onWeatherFail);
 
             }
             else { //ELSE CALL BY ZIP CODE
                 console.log("ZIP Detected");
                 var url = "https://api.openweathermap.org/data/2.5/weather?zip=" + val + "&appid=" + WEATHER_API_KEY;
-                xmlRequest(url, onWeatherSuccess, onWeatherFail);
+                xmlRequest(url, onWeatherFail);
+                
+                
             }
         }
 
@@ -96,15 +98,21 @@ var doweather = function () { //This function should be used to build your weath
     }
 
     //This function is called when the location button is pushed.
-    function xmlRequest(url, onSuccess, onFailure) {
+    function xmlRequest(url, onFailure) {
         var request = new XMLHttpRequest();
 
         request.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                onSuccess(JSON.parse(this.responseText));
+                const data = (JSON.parse(this.responseText));
+                const lon = data.coord.lon;
+                const lat = data.coord.lat;
+                url = "https://weather-ydn-yql.media.yahoo.com/forecastrss?lat=" + lat + "&lon=" + lon + "&format=json";
+                getWeatherInfo(url, onWeatherSuccess, onWeatherFail);
+
             }
             else if (this.readyState == 4) {
                 onFailure(this.status);
+
             }
         };
 
@@ -115,7 +123,36 @@ var doweather = function () { //This function should be used to build your weath
 
     }
 
+
+    
+
+
+
+    //Get weather from Yahoo
+    function getWeatherInfo(url, onSuccess, onFailure) {
+        var token = window.sessionStorage.getItem("token");
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                onSuccess(JSON.parse(this.responseText));
+            }
+            else if (this.readyState == 4) {
+                onFailure(this.status);
+            }
+        };
+        xhr.open('GET', url);
+
+        //Set header for OAuth
+        xhr.setRequestHeader("Authorization", "Bearer " + token);
+        xhr.send();
+    }
+
+
+
+
     function onWeatherSuccess(data) {
+        console.log(data);
+
         resetWeatherContent();
         screenchg();
 
@@ -128,59 +165,41 @@ var doweather = function () { //This function should be used to build your weath
         console.log($('#weather').html());
         tableEle.addClass("table table-striped table-bordered");
 
-        var celsius = (data.main.temp) - 273.15;
-        celsius = celsius.toFixed(2);
-
-        var sunrise = new Date(data.sys.sunrise * 1000);
-        var sunset = new Date(data.sys.sunset * 1000);
-
-        var sunsetHR = sunset.getHours();
-
-        if (sunsetHR > 12) {
-            sunsetHR = sunsetHR - 12;
-
-            console.log(sunsetHR);
-        }
-
-
-        console.log(sunrise.getHours() + ":" + sunrise.getMinutes());
+        
 
       
 
         var head = $('<div></div>');
         head.attr('id', 'head');
-        head.html(`<h2>Weather for ${data.name}, ${data.sys.country}</h2>`);
+        head.html(`<h2>Weather for ${data.location.city}, ${data.location.country}</h2>`);
         console.log(head.html());
-
-        var img = $('<img id="icon" src=""  alt="Weather icon">');
-        var iconCode = data.weather[0].icon
-        var icon = 'https://openweathermap.org/img/w/' + iconCode + '.png';
-
-        img.attr('src', icon);
-
-
-        head.append(celsius + "C", img, data.weather[0].description);
 
         $('#logo').append(head);
 
+        head.append(data.location.city + ', ' + data.location.country + ' ' +  data.current_observation.condition.temperature + ' ' + 'degrees');
+
+
         console.log(head.html());
 
 
 
 
-        addWeatherContent("Temperature ", celsius + "C");
+        addWeatherContent("Temperature ", data.current_observation.condition.temperature + "F");
 
 
-        addWeatherContent("Pressure ", data.main.pressure);
+        addWeatherContent("Pressure ", data.current_observation.atmosphere.pressure);
 
-        addWeatherContent("Humidity ", data.main.humidity + "%");
+        addWeatherContent("Humidity ", data.current_observation.atmosphere.humidity + "%");
 
-        addWeatherContent("Wind ", data.wind.speed + " mph");
+        addWeatherContent("Wind ", data.current_observation.wind.speed + " mph");
 
-        addWeatherContent("Sunrise ", sunrise.getHours() + ":" + sunrise.getMinutes() + "AM");
+        addWeatherContent("Sunrise ", data.current_observation.astronomy.sunrise + "AM");
 
-        addWeatherContent("Sunset ", sunsetHR + ":" + sunset.getMinutes() + "PM");
+        addWeatherContent("Sunset ", data.current_observation.astronomy.sunset + "PM");
 
+        addWeatherContent("GPS", "[" + data.location.lat + ', ' + data.location.long + "]");
+
+        addWeatherContent("Description", data.current_observation.condition.text);
     }
 
     function onWeatherFail(status) {
